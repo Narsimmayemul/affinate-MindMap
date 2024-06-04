@@ -1,0 +1,57 @@
+import React, { useCallback } from 'react';
+import ReactFlow, {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
+  Controls,
+  Background,
+  MarkerType
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+
+const initialNodes = [
+  { id: '1', position: { x: 50, y: 50 },  style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 150 },data: { label: 'Component-Based Structure: React is built around components. Each component represents a part of the UI, and components can be nested, managed, and handled independently. This modular approach makes the development and maintenance of complex UIs easier.' }, targetPosition: 'right', sourcePosition: 'right' },
+  { id: '2', position: { x: 50, y: 250 }, style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 150 } , data: { label: 'JSX Syntax: React uses JSX (JavaScript XML), a syntax extension that allows you to write HTML-like code within JavaScript. This makes it easier to visualize the structure of your UI directly in your code. Components are typically written as JSX elements.' }, targetPosition: 'right', sourcePosition: 'right' },
+  { id: '3', position: { x: 50, y: 450 }, style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 170 } , data: { label: 'State and Props: Components in React can maintain internal state (data specific to that component) and receive props (data passed from parent components). The state allows a component to manage its own data, while props allow data to be passed between components, enabling reusability and dynamic rendering.' }, targetPosition: 'right', sourcePosition: 'right' },
+  { id: '4', position: { x: 350, y: 250 },style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 200 }, data: { label: 'Virtual DOM: React uses a virtual DOM to improve performance. When the state or props of a component change, React creates a virtual representation of the DOM and compares it with the previous version. It then efficiently updates only the parts of the real DOM that have changed, minimizing direct manipulation of the DOM and improving performance.' }, sourcePosition: 'left', targetPosition: 'right' },
+  { id: '5', position: { x: 650, y: 100 },style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 200 }, data: { label: 'Lifecycle Methods: React components have a lifecycle with specific phases (mounting, updating, and unmounting). During these phases, you can hook into specific lifecycle methods (e.g., componentDidMount, componentDidUpdate, componentWillUnmount) to perform actions such as data fetching, manual DOM manipulation, or cleanup.' }, sourcePosition: 'left', targetPosition: 'left' },
+  { id: '6', position: { x: 650, y: 400 },style:{border:'1px solid black' , boxShadow:"1px 3px 1px #9E9E9E" ,borderRadius: '20px 20px', width: 250, height: 170 }, data: { label: 'Hooks: React introduced hooks (e.g., useState, useEffect, useContext) to allow functional components to manage state and side effects. Hooks simplify the process of managing component logic and make it easier to share stateful logic between components without using class components.' }, sourcePosition: 'left', targetPosition: 'left' },
+];
+
+
+const initialEdges = [
+  { id: 'e1-4', source: '4', target: '1', markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
+  { id: 'e2-4', source: '4', target: '2', markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
+  { id: 'e3-4', source: '4', target: '3', markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
+  { id: 'e5-4', source: '5', target: '4', markerStart: { type: MarkerType.ArrowClosed, color: 'black' } },
+  { id: 'e6-4', source: '6', target: '4', markerStart: { type: MarkerType.ArrowClosed, color: 'black' } }
+];
+
+export default function App() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge({ ...params, markerEnd: { type: MarkerType.ArrowClosed, color: '#f00' } }, eds)),
+    [setEdges],
+  );
+
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        snapToGrid={true} 
+        snapGrid={[15, 15]}
+      >
+        <Controls />
+        <MiniMap />
+        <Background variant="dots" color='green' gap={12} size={1} />
+      </ReactFlow>
+    </div>
+  );
+}
