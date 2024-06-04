@@ -1,148 +1,281 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from "react";
 import ReactFlow, {
+  ReactFlowProvider,
   useNodesState,
   useEdgesState,
   addEdge,
   Controls,
   Background,
   MarkerType,
-  useReactFlow,
-  ReactFlowProvider,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from "reactflow";
+
+import ZoomNode from "./ZoomNode";
+
+import "reactflow/dist/style.css";
+import "./index.css";
+// import { Background } from 'react-flow-renderer';
+
+const snapGrid = [20, 20];
+const nodeTypes = {
+  zoom: ZoomNode,
+};
 
 const initialNodes = [
-  { id: '1', position: { x: 50, y: 50 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 150 }, data: { label: 'Component-Based Structure: React is built around components. Each component represents a part of the UI, and components can be nested, managed, and handled independently. This modular approach makes the development and maintenance of complex UIs easier.' }, targetPosition: 'right', sourcePosition: 'right' },
-  { id: '2', position: { x: 50, y: 250 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 150 }, data: { label: 'JSX Syntax: React uses JSX (JavaScript XML), a syntax extension that allows you to write HTML-like code within JavaScript. This makes it easier to visualize the structure of your UI directly in your code. Components are typically written as JSX elements.' }, targetPosition: 'right', sourcePosition: 'right' },
-  { id: '3', position: { x: 50, y: 450 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 170 }, data: { label: 'State and Props: Components in React can maintain internal state (data specific to that component) and receive props (data passed from parent components). The state allows a component to manage its own data, while props allow data to be passed between components, enabling reusability and dynamic rendering.' }, targetPosition: 'right', sourcePosition: 'right' },
-  { id: '4', position: { x: 350, y: 250 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 200 }, data: { label: 'Virtual DOM: React uses a virtual DOM to improve performance. When the state or props of a component change, React creates a virtual representation of the DOM and compares it with the previous version. It then efficiently updates only the parts of the real DOM that have changed, minimizing direct manipulation of the DOM and improving performance.' }, sourcePosition: 'left', targetPosition: 'right' },
-  { id: '5', position: { x: 650, y: 100 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 200 }, data: { label: 'Lifecycle Methods: React components have a lifecycle with specific phases (mounting, updating, and unmounting). During these phases, you can hook into specific lifecycle methods (e.g., componentDidMount, componentDidUpdate, componentWillUnmount) to perform actions such as data fetching, manual DOM manipulation, or cleanup.' }, sourcePosition: 'left', targetPosition: 'left' },
-  { id: '6', position: { x: 650, y: 400 }, style: { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', borderRadius: '20px', width: 250, height: 170 }, data: { label: 'Hooks: React introduced hooks (e.g., useState, useEffect, useContext) to allow functional components to manage state and side effects. Hooks simplify the process of managing component logic and make it easier to share stateful logic between components without using class components.' }, sourcePosition: 'left', targetPosition: 'left' },
+  {
+    id: "1",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>React Hooks</h4>
+          <p>
+          React introduced hooks (e.g., useState, useEffect, useContext) to allow functional components to manage state and side effects. Hooks simplify the process of managing component logic and make it easier to share stateful logic between components without using class components.
+          </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 500, y: 250 },
+    // sourcePosition: 'left'
+    sourcePosition: 'left', targetPosition: 'right'
+  },
+  {
+    id: "2",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>Lifecycle Methods</h4>
+          <p>
+          React components have a lifecycle with specific phases (mounting, updating, and unmounting). During these phases, you can hook into specific lifecycle methods (e.g., componentDidMount, componentDidUpdate, componentWillUnmount) to perform actions such as data fetching, manual DOM manipulation, or cleanup.
+          </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 50, y: 50 },
+    // sourcePosition: 'left'
+  },
+  {
+    id: "3",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>Virtual DOM</h4>
+          <p>
+          React uses a virtual DOM to improve performance. When the state or props of a component change, React creates a virtual representation of the DOM and compares it with the previous version. It then efficiently updates only the parts of the real DOM that have changed, minimizing direct manipulation of the DOM and improving performance.
+          </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 50, y: 250 },
+    // sourcePosition: 'left'
+  },
+  {
+    id: "4",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>State and Props</h4>
+          <p>
+          Components in React can maintain internal state (data specific to that component) and receive props (data passed from parent components). The state allows a component to manage its own data, while props allow data to be passed between components, enabling reusability and dynamic rendering.
+           </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 50, y: 450 },
+    // sourcePosition: 'left',
+    // targetPosition: 'left'
+  },
+  {
+    id: "5",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>JSX Syntax</h4>
+          <p>
+          React uses JSX (JavaScript XML), a syntax extension that allows you to write HTML-like code within JavaScript. This makes it easier to visualize the structure of your UI directly in your code. Components are typically written as JSX elements.
+          </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 900, y: 50 },
+  },
+  {
+    id: "6",
+    type: "zoom",
+    data: {
+      content: (
+        <div>
+          <h4>Component-Based Structure</h4>
+          <p>
+          React is built around components. Each component represents a part of the UI, and components can be nested, managed, and handled independently. This modular approach makes the development and maintenance of complex UIs easier.
+           </p>
+        </div>
+      ),
+      zoom: 1,
+    },
+    position: { x: 900, y: 350 },
+  },
 ];
 
 const initialEdges = [
-  { id: 'e1-4', source: '4', target: '1', animated: true, markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
-  { id: 'e2-4', source: '4', target: '2', animated: true, markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
-  { id: 'e3-4', source: '4', target: '3', animated: true, markerEnd: { type: MarkerType.ArrowClosed, color: 'black' } },
-  { id: 'e5-4', source: '5', target: '4', animated: true, markerStart: { type: MarkerType.ArrowClosed, color: 'black' } },
-  { id: 'e6-4', source: '6', target: '4', animated: true, markerStart: { type: MarkerType.ArrowClosed, color: 'black' } },
+  {
+    id: "e1-2",
+    source: "2",
+    target: "1",
+    markerStart: { type: MarkerType.ArrowClosed, color: 'black' },
+    sourceHandle: "right",
+  },
+  {
+    id: "e1-3",
+    source: "3",
+    target: "1",
+    markerStart: { type: MarkerType.ArrowClosed, color: 'black' },
+    sourceHandle: "right",
+  },
+  {
+    id: "e1-4",
+    source: "4",
+    target: "1",
+    markerStart: { type: MarkerType.ArrowClosed, color: 'black' },
+    sourceHandle: "right",
+  },
+  {
+    id: "e1-5",
+    source: "1",
+    target: "5",
+    markerEnd: { type: MarkerType.ArrowClosed, color: 'black' },
+    targetHandle: "left",
+    
+  },
+  {
+    id: "e1-6",
+    source: "1",
+    target: "6",
+    markerEnd: { type: MarkerType.ArrowClosed, color: 'black' },
+    targetHandle: "left",   
+  },
 ];
 
-function Flow() {
+const defaultViewport = { x: 0, y: 0, zoom: 1 };
+
+const ContextualZoomFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [focusedNode, setFocusedNode] = useState(null);
-  const { fitView, zoomIn, zoomOut } = useReactFlow();
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const [zoom, setZoom] = useState(1);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ ...params, markerEnd: { type: MarkerType.ArrowClosed, color: '#f00' } }, eds)),
-    [setEdges]
+    (params) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
+    []
   );
 
-  const onNodeClick = useCallback((event, node) => {
+  const handleNodeClick = (event, node) => {
     setFocusedNode(node.id);
-    fitView({ nodes: [node], padding: 0.1 });
-  }, [fitView]);
-
-  useEffect(() => {
-    const handleScroll = (event) => {
-      if (focusedNode) {
-        if (event.deltaY < 0) {
-          zoomIn();
-        } else {
-          zoomOut();
-        }
-      }
-    };
-
-    window.addEventListener('wheel', handleScroll);
-    return () => {
-      window.removeEventListener('wheel', handleScroll);
-    };
-  }, [focusedNode, zoomIn, zoomOut]);
-
-  const getNodeStyle = (node) => {
-    const baseStyle = { border: '1px solid black', boxShadow: '1px 3px 1px #9E9E9E', width: 250, height: 150 };
-
-    let borderRadius = 20 / zoomLevel; 
-
-    if (borderRadius < 5) {
-      borderRadius = 5; 
-    }
-
-    return {
-      ...baseStyle,
-      borderRadius: `${borderRadius}px`,
-      transform: `scale(${zoomLevel})`,
-      position: 'absolute',
-      left: node.position.x,
-      top: node.position.y,
-    };
+    setZoom(node.data.zoom || 1); 
   };
 
   const handleZoomChange = (event) => {
-    setZoomLevel(event.target.value);
+    const newZoom = parseFloat(event.target.value);
+    setZoom(newZoom);
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === focusedNode) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              zoom: newZoom,
+            },
+          };
+        } else {
+          const minZoom = 0.3; 
+          const decrementFactor = 0.7;
+          const otherNodeZoom = Math.max(
+            minZoom,
+            1 - (newZoom - 1) * decrementFactor
+          );
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              zoom: otherNodeZoom,
+            },
+          };
+        }
+      })
+    );
   };
 
+
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ height: "100vh"  , width:'180vh'}}>
       <ReactFlow
-        nodes={nodes.map(node => ({
+        nodes={nodes.map((node) => ({
           ...node,
-          style: getNodeStyle(node),
+          data: {
+            ...node.data,
+            focused: node.id === focusedNode,
+          },
+          
         }))}
+        
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
         fitView
-        onNodeClick={onNodeClick}
         snapToGrid={true}
-        snapGrid={[15, 15]}
-      >
-        <Controls />
+        snapGrid={snapGrid}
+        defaultViewport={defaultViewport}
+        onNodeClick={handleNodeClick}
+        attributionPosition="center"
+        
+      > 
+      <Controls />
         <Background variant="dots" color="green" gap={12} size={1} />
-        {focusedNode && (
-          <>
-            <div
-              style={{
-                position: 'absolute',
-                pointerEvents: 'none',
-                border: 'none',
-                borderRadius: '5px',
-                width: nodes.find(node => node.id === focusedNode).style.width,
-                height: nodes.find(node => node.id === focusedNode).style.height,
-                left: nodes.find(node => node.id === focusedNode).position.x,
-                top: nodes.find(node => node.id === focusedNode).position.y,
-                transform: 'translate(-2px, -2px)',
-              }}
-            />
-            <input
-              type="range"
-              min="1"
-              max="3"
-              step="0.1"
-              value={zoomLevel}
-              onChange={handleZoomChange}
-              style={{
-                position: 'absolute',
-                left: nodes.find(node => node.id === focusedNode).position.x,
-                top: nodes.find(node => node.id === focusedNode).position.y + parseInt(nodes.find(node => node.id === focusedNode).style.height, 10) + 10,
-                zIndex: 10,
-              }}
-            />
-          </>
-        )}
       </ReactFlow>
+       
+      {focusedNode && (
+        <div className="zoom-controls">
+          <label>Focused:</label>
+          <input
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.1"
+            value={zoom}
+            onChange={handleZoomChange}
+            className="zoom-slider"
+          />
+          <div className="zoom-scale">
+            {[...Array(26).keys()].map((i) => (
+              <div key={i} className="tick">
+                {i % 5 === 0 && (
+                  <span className="tick-label">{(i / 10).toFixed(1)}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default function App() {
-  return (
-    <ReactFlowProvider>
-      <Flow />
-    </ReactFlowProvider>
-  );
-}
+const WrappedContextualZoomFlow = () => (
+  <ReactFlowProvider>
+    <ContextualZoomFlow />
+  </ReactFlowProvider>
+);
+
+export default WrappedContextualZoomFlow;
